@@ -111,6 +111,14 @@ button.on{background:rgba(242,194,106,.14);border-color:var(--accent);color:var(
 #tour .bar{flex:1;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
 #tour .bar i{display:block;height:100%;width:0;background:var(--accent)}
 
+#sysBar{position:fixed;top:var(--gt);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:8px 10px 8px 14px;max-width:calc(100vw - 32px);box-sizing:border-box}
+#sysBar .t{font-family:var(--font-display);font-size:16px;white-space:nowrap}
+#sysBar .s{font-size:11.5px;color:var(--muted);white-space:nowrap}
+#sysBar button{font-size:12.5px;padding:6px 10px}
+body.sys #ladder,body.sys #legend{display:none}
+#info .moons{display:flex;flex-wrap:wrap;gap:6px}
+#info .moons button{font-size:12px;padding:4px 8px}
+@media (max-width:1080px){#sysBar{top:calc(var(--gt) + 118px);left:var(--gl);transform:none}}
 #legend{position:fixed;left:var(--gl);bottom:var(--gb);font-size:11px;color:var(--muted);padding:9px 11px;display:flex;flex-direction:column;gap:5px;max-width:230px}
 #legend .k{display:flex;flex-wrap:wrap;gap:4px 10px}
 #legend .k span{display:flex;align-items:center;gap:5px}
@@ -146,6 +154,8 @@ button.on{background:rgba(242,194,106,.14);border-color:var(--accent);color:var(
   #hud h1{font-size:18px}
   #hud .sub{display:none}
   #searchWrap{top:calc(var(--gt) + 90px);left:var(--gl);right:auto}
+  #sysBar{top:calc(var(--gt) + 140px);gap:8px}
+  #sysBar .s{display:none}
   #info figure.ph{width:150px}
   #info .x{top:12px;right:12px}
   #info{top:auto;bottom:calc(var(--gb) + var(--dockH,58px) + 8px);right:var(--gr);left:var(--gl);width:auto;max-height:44%}
@@ -174,6 +184,7 @@ button.on{background:rgba(242,194,106,.14);border-color:var(--accent);color:var(
 </div>
 
 <nav id="ladder" class="panel" aria-label="거리 축척 단계"></nav>
+<div id="sysBar" class="panel" hidden><div><div class="t" id="sysTitle"></div><div class="s" id="sysSub"></div></div><button id="sysExit">← 태양 중심 지도</button></div>
 
 <aside id="info" class="panel" hidden></aside>
 
@@ -287,6 +298,7 @@ const CAT = {
 // square images: NASA / ESO / ESA-Hubble / ESA-Webb (t: photo | art | diagram | map)
 const IMG={"sun":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/GSFC_20171208_Archive_e000759","s":"SDO가 극자외선으로 본 태양"},"mercury":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/GSFC_20171208_Archive_e001922","s":""},"venus":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA23791","s":"마리너 10호 사진 재처리 (2020)"},"earth":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/GSFC_20171208_Archive_e001386","s":""},"mars":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/opo0124a/","s":""},"jupiter":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic1914a/","s":""},"saturn":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic1917a/","s":""},"uranus":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA18182","s":""},"neptune":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA01492","s":""},"pluto":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA19952","s":""},"voyager1":{"t":"art","c":"NASA","u":"https://images.nasa.gov/details/PIA04495","s":""},"voyager2":{"t":"art","c":"NASA","u":"https://images.nasa.gov/details/PIA17049","s":""},"heliopause":{"t":"diagram","c":"NASA","u":"https://images.nasa.gov/details/PIA22566","s":"태양권과 보이저의 위치 (NASA 도식)"},"kuiper":{"t":"art","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/opo1447a/","s":""},"oort":{"t":"diagram","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/opo0204i/","s":"카이퍼 벨트와 오르트 구름 도식"},"proxima":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/potw1343a/","s":"허블이 찍은 프록시마 센타우리"},"alphacen":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/potw1635a/","s":"허블이 찍은 알파 센타우리 A·B"},"barnard":{"t":"art","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1837a/","s":""},"sirius":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0516a/","s":""},"epseri":{"t":"diagram","c":"NASA","u":"https://images.nasa.gov/details/PIA11376","s":"에리다누스자리 엡실론 계와 태양계 비교 도식"},"ross128":{"t":"art","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1736a/","s":""},"vega":{"t":"art","c":"NASA","u":"https://images.nasa.gov/details/PIA16610","s":""},"fomalhaut":{"t":"photo","c":"ESA/Webb, NASA & CSA · CC BY 4.0","u":"https://esawebb.org/images/weic2312a/","s":"JWST가 본 포말하우트 먼지 원반"},"trappist1":{"t":"art","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1706a/","s":""},"51peg":{"t":"art","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1517a/","s":""},"polaris":{"t":"art","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/opo0602e/","s":""},"pleiades":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA09262","s":"스피처 적외선 망원경이 본 플레이아데스"},"betelgeuse":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/potw1726a/","s":"ALMA로 본 베텔게우스"},"antares":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1726a/","s":"VLTI로 재구성한 안타레스 표면"},"orion":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0601a/","s":""},"horsehead":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso0202a/","s":""},"ring":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/GSFC_20171208_Archive_e001464","s":""},"kepler452":{"t":"art","c":"NASA","u":"https://images.nasa.gov/details/PIA19824","s":""},"crab":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0515a/","s":""},"eagle":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic1501a/","s":"허블의 '창조의 기둥'"},"cygx1":{"t":"diagram","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/opo0103b/","s":"블랙홀 쌍성 관측 개념도"},"carina":{"t":"photo","c":"ESA/Webb, NASA & CSA · CC BY 4.0","u":"https://esawebb.org/images/weic2205a/","s":"JWST의 '우주 절벽'"},"omegacen":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso0844a/","s":""},"sgra":{"t":"photo","c":"EHT Collaboration · ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso2208-eht-mwa/","s":"EHT가 촬영한 궁수자리 A* 그림자 (2022)"},"lmc":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/potw1225a/","s":"칠레 VLT 위 하늘의 대·소마젤란은하 (가운데)"},"smc":{"t":"photo","c":"ESA/Webb, NASA & CSA · CC BY 4.0","u":"https://esawebb.org/images/weic2301a/","s":"소마젤란은하 안의 별 탄생 영역 NGC 346"},"m31":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA04921","s":"자외선(GALEX)으로 본 안드로메다"},"m33":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1424a/","s":""},"m81":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0710a/","s":""},"m82":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0604a/","s":""},"cena":{"t":"photo","c":"ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso0903a/","s":""},"m101":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0602a/","s":""},"m51":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/heic0506a/","s":""},"m104":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/opo0328a/","s":""},"m87":{"t":"photo","c":"EHT Collaboration · ESO · CC BY 4.0","u":"https://www.eso.org/public/images/eso1907a/","s":"EHT가 촬영한 M87* 그림자 (2019)"},"virgo":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA07906","s":""},"fornax":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA12835","s":""},"coma":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA04210","s":""},"3c273":{"t":"photo","c":"ESA/Hubble & NASA · CC BY 4.0","u":"https://esahubble.org/images/potw1346a/","s":"허블이 찍은 3C 273"},"bullet":{"t":"photo","c":"ESA/Webb, NASA & CSA · CC BY 4.0","u":"https://esawebb.org/images/bullet-cluster/","s":""},"gnz11":{"t":"photo","c":"ESA/Webb, NASA & CSA · CC BY 4.0","u":"https://esawebb.org/images/weic2406a/","s":"GOODS-North 영역 (JWST)"},"jades14":{"t":"photo","c":"ESA/Webb, NASA & CSA · CC BY 4.0","u":"https://esawebb.org/images/jades4/","s":"JWST 심우주 사진 (오른쪽 위 확대 상자)"},"cmb":{"t":"map","c":"NASA","u":"https://images.nasa.gov/details/PIA16873","s":"플랑크 위성의 전천 CMB 지도"}};
 Object.assign(IMG,{"wolf359":{"t":"photo","c":"Klaus Hohmann · Public domain · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Wolf359.jpg","s":"지상 망원경으로 찍은 울프 359 주변 (가운데 붉은 별)"},"61cyg":{"t":"photo","c":"Гоша0102 · CC BY-SA 4.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:61cyg.jpg","s":"아마추어 망원경 사진"},"procyon":{"t":"photo","c":"Giuseppe Donatiello · CC0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Procyon_A_and_Procyon_B_(29468251154).jpg","s":"프로키온 A와 백색왜성 B (주석 포함)"},"tauceti":{"t":"art","c":"Pablo Carlos Budassi · Public domain · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Tau_ceti.png","s":"행성계 상상도"},"altair":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA04204","s":"NASA 망원경 사진"},"pollux":{"t":"art","c":"Byron Rodrigez · CC BY-SA 3.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Pollux..jpg","s":"렌더링 이미지"},"arcturus":{"t":"photo","c":"MAST (STScI) · Public domain · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Arcturus_(optical).png","s":"DSS 지상 관측 사진 (MAST)"},"aldebaran":{"t":"photo","c":"NASA, ESA, and STScI · CC BY-SA 4.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Aldebaran.jpg","s":"DSS 관측 사진"},"regulus":{"t":"diagram","c":"Stanley Joseph \"Stan\" · CC BY 4.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Regulus_in_true_color.jpg","s":"간섭계 측정 기반 모양 재현 (빠른 자전으로 납작함)"},"spica":{"t":"photo","c":"Roberto Mura · CC BY-SA 4.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Spica_DSS.png","s":"DSS 관측 사진"},"canopus":{"t":"photo","c":"NASA · Public domain · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Canopus.jpg","s":"NASA 사진"},"rigel":{"t":"photo","c":"Giuseppe Donatiello · CC0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Rigel_%26_IC_2118_(Orion_-_Eridanus)_(Giuseppe_Donatiello).jpg","s":"리겔(왼쪽 아래)과 마녀머리성운"},"deneb":{"t":"photo","c":"Roberto Mura · CC BY-SA 4.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Deneb_DSS.png","s":"DSS 관측 사진"},"sgrdsph":{"t":"photo","c":"Ata Sarajedini · Public domain · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Messier_54.png","s":"중심핵의 구상성단 M54 (허블)"},"laniakea":{"t":"diagram","c":"Ivanov · CC BY-SA 4.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Laniakea_with_Galaktika.jpg","s":"은하 흐름선 시각화"},"shapley":{"t":"photo","c":"Judy Schmidt · CC BY 2.0 · Wikimedia Commons","u":"https://commons.wikimedia.org/wiki/File:Galaxies_in_the_Shapley_Supercluster_-_Flickr_-_geckzilla.png","s":"섀플리 초은하단의 은하들 (허블 자료 재처리)"}});
+Object.assign(IMG,{"moon":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/GSFC_20171208_Archive_e001515","s":"보름달 (NASA 고다드)"},"phobos":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA10369","s":"MRO가 6,800km에서 찍은 포보스"},"deimos":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA11826","s":"MRO가 찍은 데이모스"},"amalthea":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA01072","s":"갈릴레오호의 첫 아말테아 사진"},"io":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA02308","s":"갈릴레오호 실제 색 이오"},"europa":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA19048","s":"갈릴레오호 사진 재처리 (2014)"},"ganymede":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA00706","s":"갈릴레오호 가니메데"},"callisto":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA03456","s":"갈릴레오호 칼리스토 (색 강조)"},"mimas":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA12570","s":"카시니가 본 허셜 크레이터"},"enceladus":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA00347","s":"보이저 2호 엔셀라두스"},"tethys":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA11624","s":"카시니 · 페넬로페 크레이터"},"dione":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA17195","s":"카시니 디오네"},"rhea":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA20495","s":"카시니 레아"},"titan":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA06230","s":"카시니 자연색 합성"},"hyperion":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA14583","s":"카시니 히페리온"},"iapetus":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA08950","s":"카시니 · 밝은 반구"},"phoebe":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA18411","s":"카시니 포에베 (2004)"},"miranda":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA18185","s":"보이저 2호 미란다"},"ariel":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA01534","s":"보이저 2호 아리엘"},"umbriel":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA00040","s":"보이저 2호 움브리엘"},"titania":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA01979","s":"보이저 2호 티타니아"},"oberon":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA00034","s":"보이저 2호 오베론"},"triton":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA00317","s":"보이저 2호 트리톤 색 모자이크"},"nereid":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA00054","s":"보이저 2호 네레이드 (원거리)"},"charon":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA19709","s":"뉴허라이즌스 카론 (색 강조)"},"nix":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA19847","s":"뉴허라이즌스 닉스 (색 강조)"},"hydra":{"t":"photo","c":"NASA","u":"https://images.nasa.gov/details/PIA19847","s":"뉴허라이즌스 히드라"}});
 const SPEC = {O:'#9bb0ff',B:'#aabfff',A:'#cad7ff',F:'#f4f3ff',G:'#fff1dc',K:'#ffcf96',M:'#ffad6a'};
 
 // planets: a (AU), mean longitude at J2000 (deg), period (yr)
@@ -587,6 +599,8 @@ let selected=null, measureMode=false, mA=null;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let mPair=null;
 function infoRows(o){
+  if(o.cat==='moon') return moonRows(o);
+  if(o.isCenter) o=o.ref;
   const rows=[];
   if(o.id!=='sun'){
     rows.push(['태양에서',fmtDist(o.d)]);
@@ -603,24 +617,29 @@ function infoRows(o){
 }
 function renderInfo(){
   if(!selected){ info.hidden=true; return; }
-  const o=selected, cat=CAT[o.cat]; mPair=null;
+  const o=selected, cat=o.cat==='moon'?{ko:'위성 · '+byId[o.parent].ko,c:o.color}:CAT[o.cat]; mPair=null;
   info.classList.remove('measure');
   const im=IMG[o.id], TL={photo:'관측 사진',art:'상상도',diagram:'도식',map:'관측 지도'};
   const col=o.color||cat.c, wide=['super','satgal','galcluster','galaxy'].includes(o.cat);
   const fig = im
     ? `<figure class="ph"><img src="img/${o.id}.jpg" alt="${esc(o.ko)} ${TL[im.t]}" width="360" height="360"><span class="badge ${im.t}">${TL[im.t]}</span></figure>
        <div class="credit">${im.s?esc(im.s)+' · ':''}<a href="${im.u}" target="_blank" rel="noopener">${esc(im.c)}</a></div>`
-    : `<figure class="ph"><div class="noimg${wide?' wide':''}" style="--c:${col}"><span>${wide?'대표할 만한 공개 사진이 없는 구조입니다':'별 표면을 분해한 공개 사진이 없습니다 · 색은 분광형 기준'}</span></div><span class="badge none">사진 없음</span></figure>`;
+    : `<figure class="ph"><div class="noimg${wide?' wide':''}" style="--c:${col}"><span>${o.cat==='moon'?'공개 사진을 찾지 못했습니다':wide?'대표할 만한 공개 사진이 없는 구조입니다':'별 표면을 분해한 공개 사진이 없습니다 · 색은 분광형 기준'}</span></div><span class="badge none">사진 없음</span></figure>`;
   info.innerHTML=`<button class="x" aria-label="닫기">✕</button>${fig}
     <div class="cat">${esc(cat.ko)}</div><h2>${esc(o.ko)}</h2><div class="en">${esc(o.en)}</div>
     <dl id="infoDl">${infoRows(o)}</dl>
     <p>${esc(o.desc)}</p>
     ${o.note?`<div class="note">※ ${esc(o.note)}</div>`:''}
-    <div class="row"><button data-act="fly">이곳으로 이동</button><button data-act="measure">여기서 거리 재기</button></div>`;
+    ${(MOONS[o.id]&&!SYS)?`<div class="row"><button data-act="sys" class="on">위성계 보기 (${MOONS[o.id].length}개)</button></div>`:''}
+    ${(o.isCenter)?`<div class="moons">${SYS.items.filter(x=>!x.isCenter).map(x=>`<button data-moon="${x.id}">${esc(x.ko)}</button>`).join('')}</div>`:''}
+    <div class="row"><button data-act="fly">이곳으로 이동</button>${SYS?'<button data-act="exit">← 태양 중심 지도</button>':'<button data-act="measure">여기서 거리 재기</button>'}</div>`;
   info.hidden=false;
+  const bs=info.querySelector('[data-act=sys]'); if(bs) bs.onclick=()=>enterSys(o.id);
+  const be=info.querySelector('[data-act=exit]'); if(be) be.onclick=()=>exitSys();
+  info.querySelectorAll('[data-moon]').forEach(b=>b.onclick=()=>flyToObj(SYS.items.find(x=>x.id===b.dataset.moon)));
   info.querySelector('.x').onclick=()=>{ selected=null; selRing.visible=false; renderInfo(); };
   info.querySelector('[data-act=fly]').onclick=()=>flyToObj(o);
-  info.querySelector('[data-act=measure]').onclick=()=>{ setMeasure(true); mA=o; toast(`${o.ko}에서 출발 · 두 번째 천체를 선택하세요`); };
+  const bm=info.querySelector('[data-act=measure]'); if(bm) bm.onclick=()=>{ setMeasure(true); mA=o; toast(`${o.ko}에서 출발 · 두 번째 천체를 선택하세요`); };
 }
 function measureRows(a,b){
   const d=a.real.distanceTo(b.real);
@@ -657,7 +676,146 @@ const toastEl=document.getElementById('toast'); let toastT;
 function toast(msg,ms=0){ toastEl.textContent=msg; toastEl.hidden=false; clearTimeout(toastT); if(ms) toastT=setTimeout(()=>toastEl.hidden=true,ms); }
 const bMeasure=document.getElementById('bMeasure');
 function setMeasure(on){ measureMode=on; mA=null; bMeasure.classList.toggle('on',on); if(on){ toast('거리 측정: 첫 번째 천체를 선택하세요'); } else toastEl.hidden=true; }
-bMeasure.onclick=()=>{ if(measureMode) setMeasure(false); else { measureLine.visible=false; setMeasure(true);} };
+bMeasure.onclick=()=>{ if(SYS){ toast('위성계 보기에서는 거리 측정을 쓸 수 없습니다. 태양 중심 지도로 돌아가 주세요.',3000); return; } if(measureMode) setMeasure(false); else { measureLine.visible=false; setMeasure(true);} };
+
+
+// ---------- planet systems (moons) ----------
+// [id, 한글, 영문, 장반경 km, 공전주기 일(음수=역행), 반지름 km, 색, 발견, 중요도, 설명]
+const PLANET_R={earth:6371,mars:3389.5,jupiter:69911,saturn:58232,uranus:25362,neptune:24622,pluto:1188.3};
+const MOON_COUNT={earth:'1',mars:'2',jupiter:'97',saturn:'274',uranus:'29',neptune:'16',pluto:'5'};
+const MOONS={
+ earth:[['moon','달','Moon',384400,27.3217,1737.4,'#d4d4d4','—',5,'지구의 유일한 자연 위성. 늘 같은 면을 지구로 향하며(동주기 자전), 해마다 약 3.8cm씩 멀어지고 있습니다. 1969~1972년 아폴로 우주인 12명이 걸었습니다.']],
+ mars:[['phobos','포보스','Phobos',9376,0.31891,11.3,'#a08f7d','1877 · A. 홀',4,'화성의 안쪽 위성. 화성이 자전하는 것보다 빨리 돌아 하루에 두 번 서쪽에서 뜹니다. 점점 가까워져 약 5천만 년 뒤 부서져 고리가 되거나 충돌할 것으로 봅니다.'],
+       ['deimos','데이모스','Deimos',23463,1.26244,6.2,'#b5a48f','1877 · A. 홀',3,'화성의 바깥 위성. 지름 약 12km의 작은 천체로, 포획된 소행성이거나 거대 충돌 파편일 수 있습니다.']],
+ jupiter:[['amalthea','아말테아','Amalthea',181366,0.49818,83.5,'#c0634a','1892 · E. E. 바너드',2,'목성의 갈릴레이 위성 안쪽을 도는 붉은 감자 모양 위성. 태양계에서 가장 붉은 천체 중 하나입니다.'],
+          ['io','이오','Io',421700,1.769138,1821.6,'#f2e27a','1610 · 갈릴레오',4,'태양계에서 화산 활동이 가장 활발한 천체. 목성의 조석력으로 내부가 달궈져 400개가 넘는 활화산이 있습니다.'],
+          ['europa','유로파','Europa',671034,3.551181,1560.8,'#e8dcc4','1610 · 갈릴레오',5,'얼음 지각 아래에 지구 바다보다 많은 물이 있는 것으로 보이는 위성. 생명체 탐사의 핵심 후보로, NASA 유로파 클리퍼가 2030년 도착 예정입니다.'],
+          ['ganymede','가니메데','Ganymede',1070412,7.154553,2634.1,'#b9ad9a','1610 · 갈릴레오',4,'태양계에서 가장 큰 위성으로 수성보다 큽니다. 자체 자기장을 가진 유일한 위성이며, ESA 주스(JUICE)가 2034년 궤도에 진입합니다.'],
+          ['callisto','칼리스토','Callisto',1882709,16.689017,2410.3,'#8d7f6e','1610 · 갈릴레오',3,'태양계에서 크레이터가 가장 빽빽한 표면 중 하나. 지질 활동이 거의 없어 수십억 년 전 모습을 간직하고 있습니다.'],
+          ['himalia','히말리아','Himalia',11461000,250.56,70,'#9a9a9a','1904 · C. 페린',1,'목성의 바깥쪽 불규칙 위성 무리 중 가장 큰 천체. 포획된 소행성으로 추정됩니다.']],
+ saturn:[['mimas','미마스','Mimas',185539,0.942422,198.2,'#cfcfcf','1789 · W. 허셜',3,'지름 130km의 거대한 허셜 크레이터 때문에 \'데스 스타\'를 닮은 위성. 얼음 껍질 아래 젊은 바다가 있을 가능성이 2024년 제기됐습니다.'],
+         ['enceladus','엔셀라두스','Enceladus',237948,1.370218,252.1,'#ffffff','1789 · W. 허셜',5,'남극의 균열에서 물기둥을 우주로 뿜어내는 위성. 분출물에서 유기물과 인이 검출되어 생명체 거주 가능성이 높은 곳으로 꼽힙니다.'],
+         ['tethys','테티스','Tethys',294619,1.887802,531.1,'#e8e8e8','1684 · G. D. 카시니',2,'거의 순수한 물 얼음으로 이루어진 위성. 길이 2,000km의 이타카 협곡이 표면을 가로지릅니다.'],
+         ['dione','디오네','Dione',377396,2.736915,561.4,'#dcdcdc','1684 · G. D. 카시니',2,'밝은 얼음 절벽이 줄무늬처럼 보이는 위성. 내부에 바다가 있을 수 있습니다.'],
+         ['rhea','레아','Rhea',527108,4.518212,763.8,'#d0d0d0','1672 · G. D. 카시니',2,'토성의 두 번째로 큰 위성. 얇은 산소·이산화탄소 대기가 검출되었습니다.'],
+         ['titan','타이탄','Titan',1221870,15.945421,2574.7,'#e0a85a','1655 · C. 하위헌스',5,'짙은 질소 대기를 가진 유일한 위성. 메탄 비가 내리고 메탄·에탄 호수가 있습니다. 2005년 하위헌스 탐사선이 착륙했고, NASA 드래건플라이가 2034년 도착 예정입니다.'],
+         ['hyperion','히페리온','Hyperion',1481010,21.276609,135,'#c9b49a','1848 · W. 본드 외',1,'스펀지처럼 구멍이 숭숭 뚫린 불규칙한 위성. 자전이 혼돈스럽게 변합니다.'],
+         ['iapetus','이아페투스','Iapetus',3560820,79.3215,734.5,'#b8a890','1671 · G. D. 카시니',3,'한쪽 반구는 눈처럼 밝고 다른 쪽은 석탄처럼 어두운 두 얼굴의 위성. 적도를 따라 높이 20km의 산맥이 둘러져 있습니다.'],
+         ['phoebe','포에베','Phoebe',12960000,-550.31,106.5,'#7a6f66','1899 · W. 피커링',1,'토성을 거꾸로(역행) 도는 어두운 위성. 카이퍼 벨트에서 포획된 천체로 보이며, 거대한 먼지 고리를 만듭니다.']],
+ uranus:[['miranda','미란다','Miranda',129390,1.413479,235.8,'#c8c8c8','1948 · G. 카이퍼',3,'조각을 이어 붙인 듯한 기묘한 지형과 높이 20km의 절벽(베로나 루페스)이 있는 위성.'],
+         ['ariel','아리엘','Ariel',191020,2.520379,578.9,'#d8d8d8','1851 · W. 라셀',2,'천왕성 위성 중 표면이 가장 밝고 젊은 위성. 협곡과 매끈한 평원이 있습니다.'],
+         ['umbriel','움브리엘','Umbriel',266000,4.144177,584.7,'#8a8a8a','1851 · W. 라셀',2,'천왕성의 5대 위성 중 가장 어두운 위성. 오래된 크레이터로 뒤덮여 있습니다.'],
+         ['titania','티타니아','Titania',435910,8.705872,788.4,'#c9c0b8','1787 · W. 허셜',3,'천왕성의 가장 큰 위성. 거대한 단층 협곡이 있습니다.'],
+         ['oberon','오베론','Oberon',583520,13.463239,761.4,'#b8aaa0','1787 · W. 허셜',2,'천왕성의 가장 바깥 대형 위성. 크레이터 바닥이 어두운 물질로 채워져 있습니다.']],
+ neptune:[['proteus','프로테우스','Proteus',117647,1.122315,210,'#8a8580','1989 · 보이저 2호',2,'보이저 2호가 발견한 어두운 위성. 공 모양이 되기 직전 크기의 불규칙한 천체입니다.'],
+          ['triton','트리톤','Triton',354759,-5.876854,1353.4,'#e6d4cf','1846 · W. 라셀',5,'행성 자전과 반대로 도는(역행) 유일한 대형 위성. 카이퍼 벨트에서 포획된 것으로 보이며, 질소 간헐천이 분출합니다.'],
+          ['nereid','네레이드','Nereid',5513818,360.13,170,'#a9a9a9','1949 · G. 카이퍼',1,'궤도가 매우 길쭉한(이심률 0.75) 위성. 해왕성에서 140만~960만 km 사이를 오갑니다.']],
+ pluto:[['charon','카론','Charon',19591,6.3872,606,'#bdb7b0','1978 · J. 크리스티',4,'명왕성 지름의 절반이 넘는 큰 위성. 둘은 서로 같은 면을 마주 보며 공통 질량중심을 돕니다. 북극의 붉은 \'모르도르 반점\'이 특징입니다.'],
+        ['nix','닉스','Nix',48694,24.8546,18,'#d0d0d0','2005 · 허블',1,'명왕성의 작은 위성. 자전축이 혼돈스럽게 흔들립니다.'],
+        ['hydra','히드라','Hydra',64738,38.2018,19,'#d0d0d0','2005 · 허블',1,'명왕성의 가장 바깥 위성. 표면이 거의 순수한 물 얼음입니다.']]
+};
+const ALLMOONS=[];
+Object.entries(MOONS).forEach(([pid,list])=>list.forEach(m=>{
+  const [id,ko,en,a,P,rad,col,disc,imp,desc]=m;
+  ALLMOONS.push({id,ko,en,a,P,rad,color:col,disc,imp,desc,parent:pid,cat:'moon',size:.75,phase0:((id.charCodeAt(0)*37+id.length*91)%360)*DEG,
+    note:'공전 주기·궤도 반지름은 실제 값, 궤도상 위치(위상)는 근사입니다. 모든 궤도를 한 평면에 원으로 그렸습니다.'});
+}));
+const sysScene=new THREE.Scene();
+let SYS=null, savedCam=null;
+const sysBar=document.getElementById('sysBar');
+function circTex(src, saturn, cb){
+  const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d');
+    if(!saturn){ g.beginPath(); g.arc(128,128,124,0,Math.PI*2); g.clip(); }
+    g.drawImage(img,0,0,256,256);
+    if(saturn){ const d=g.getImageData(0,0,256,256), px=d.data; for(let i=0;i<px.length;i+=4){ const l=(px[i]*.3+px[i+1]*.59+px[i+2]*.11)/255; px[i+3]=Math.max(0,Math.min(255,(l-.07)*6*255)); } g.putImageData(d,0,0); }
+    const t=new THREE.CanvasTexture(c); cb(t); }; img.src=src;
+}
+function enterSys(pid, focusMoon){
+  if(!MOONS[pid]) return;
+  if(SYS) exitSys(true);
+  stopTour(); setMeasure(false); measureLine.visible=false; mPair=null;
+  const P=byId[pid], R=PLANET_R[pid];
+  const fl=d=>10*Math.log10(1+d/R), fli=r=>R*(Math.pow(10,r/10)-1);
+  savedCam={pos:camera.position.clone(),tgt:controls.target.clone(),min:controls.minDistance,max:controls.maxDistance,targetObj};
+  while(sysScene.children.length) sysScene.remove(sysScene.children[0]);
+  const sys={pid,P,R,fl,fli,items:[],rungs:[],orbits:new THREE.Group(),ringG:new THREE.Group()};
+  // planet disc (photo)
+  const pr=fl(R);  // = 3.01
+  const center={...P, isCenter:true, ref:P, pos:new THREE.Vector3(), fixed:true, size:1, imp:6};
+  const ps=new THREE.Sprite(new THREE.SpriteMaterial({color:0xffffff,transparent:true,depthWrite:false}));
+  const scl=pid==='saturn'?10.5:pr*2/0.97; ps.scale.setScalar(scl);
+  circTex(`img/${pid}.jpg`, pid==='saturn', t=>{ ps.material.map=t; ps.material.needsUpdate=true; });
+  sysScene.add(ps); center.sprite=ps;
+  const cel=document.createElement('div'); cel.className='lbl'; cel.textContent=P.ko; cel.title=P.en; labelLayer.appendChild(cel); center.el=cel;
+  cel.addEventListener('click',e=>{ e.stopPropagation(); pick(center); });
+  sys.items.push(center);
+  let maxR=0;
+  ALLMOONS.filter(m=>m.parent===pid).forEach(m=>{
+    const r=fl(m.a); maxR=Math.max(maxR,r);
+    m.r=r; m.pos=new THREE.Vector3(); m.real=new THREE.Vector3();
+    m.sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:new THREE.Color(m.color),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+    sysScene.add(m.sprite);
+    const el=document.createElement('div'); el.className='lbl'; el.textContent=m.ko; el.title=m.en; labelLayer.appendChild(el); m.el=el;
+    el.addEventListener('click',e=>{ e.stopPropagation(); pick(m); });
+    el.addEventListener('dblclick',e=>{ e.stopPropagation(); flyToObj(m); });
+    const pts=[]; for(let i=0;i<=160;i++){ const a=i/160*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*r,0,Math.sin(a)*r)); }
+    sys.orbits.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:m.color,transparent:true,opacity:.32})));
+    sys.items.push(m);
+  });
+  [1e3,1e4,1e5,1e6,1e7].filter(d=>d>R*1.3&&fl(d)<maxR*1.6).forEach(d=>{
+    const r=fl(d), pts=[]; for(let i=0;i<=180;i++){ const a=i/180*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*r,0,Math.sin(a)*r)); }
+    const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineDashedMaterial({color:0x8fa3c8,transparent:true,opacity:.18,dashSize:.25,gapSize:.25}));
+    l.computeLineDistances(); sys.ringG.add(l);
+    const el=document.createElement('div'); el.className='lbl ring'; el.textContent=kfmt(d)+' km'; labelLayer.appendChild(el);
+    sys.rungs.push({d,r,el,pos:new THREE.Vector3(r*Math.SQRT1_2,0,r*Math.SQRT1_2)});
+  });
+  sys.orbits.visible=orbitGroup.visible; sys.ringG.visible=ringGroup.visible;
+  sysScene.add(sys.orbits); sysScene.add(sys.ringG); sysScene.add(selRing);
+  sys.maxR=maxR; SYS=sys;
+  requestAnimationFrame(()=>[...sys.items,...sys.rungs].forEach(o=>{ o.w=o.el.offsetWidth||60; o.h=o.el.offsetHeight||18; }));
+  objects.forEach(o=>o.el.style.display='none'); RUNGS.forEach(g=>g.el.style.display='none');
+  document.body.classList.add('sys');
+  document.getElementById('sysTitle').textContent=`${P.ko}계`;
+  document.getElementById('sysSub').textContent=`주요 위성 ${sys.items.length-1}개 표시 · 알려진 위성 ${MOON_COUNT[pid]}개(2025년 기준) · 거리는 ${P.ko} 중심 로그 축척`;
+  sysBar.hidden=false;
+  updateSys(sim.ms,true);
+  controls.minDistance=pr*1.25; controls.maxDistance=Math.max(40,maxR*5);
+  controls.target.set(0,0,0); camera.position.set(0,maxR*2.2,maxR*4.2);
+  targetObj=null; fly=null;
+  const fm=focusMoon&&sys.items.find(o=>o.id===focusMoon);
+  if(fm){ flyToObj(fm,1600); } else { selected=center; renderInfo(); flyTo(new THREE.Vector3(), maxR*2, 1600, new THREE.Vector3(0,.55,1)); }
+  lastR=-1;
+}
+function exitSys(silent){
+  if(!SYS) return;
+  [...SYS.items,...SYS.rungs].forEach(o=>o.el.remove());
+  while(sysScene.children.length) sysScene.remove(sysScene.children[0]);
+  scene.add(selRing);
+  const P=SYS.P; SYS=null;
+  document.body.classList.remove('sys'); sysBar.hidden=true;
+  controls.minDistance=savedCam.min; controls.maxDistance=savedCam.max;
+  camera.position.copy(savedCam.pos); controls.target.copy(savedCam.tgt); targetObj=savedCam.targetObj; fly=null;
+  if(!silent){ selected=P; renderInfo(); }
+  lastR=-1;
+}
+document.getElementById('sysExit').onclick=()=>exitSys();
+function updateSys(ms,force){
+  if(!SYS) return;
+  const days=(ms-J2000)/864e5;
+  SYS.items.forEach(m=>{
+    if(m.isCenter) return;
+    const th=m.phase0+2*Math.PI*days/m.P, old=m.pos.clone();
+    m.pos.set(Math.cos(th)*m.r,0,-Math.sin(th)*m.r); m.real.set(Math.cos(th)*m.a,0,-Math.sin(th)*m.a); m.sprite.position.copy(m.pos);
+    if(m===targetObj && !fly && !force){ tmpV.copy(m.pos).sub(old); controls.target.add(tmpV); camera.position.add(tmpV); }
+  });
+}
+function fmtPeriod(dd){ const d=Math.abs(dd); if(d<1) return trim(d*24)+'시간'; if(d<400) return trim(d)+'일'; return trim(d/365.25)+'년'; }
+function moonRows(m){
+  const R=PLANET_R[m.parent], P=byId[m.parent];
+  const rows=[['모행성',P.ko],[`${P.ko} 중심에서`,`${kfmt(m.a)} km (행성 반지름의 ${trim(m.a/R)}배)`],['공전 주기',fmtPeriod(m.P)+(m.P<0?' · 역행':'')],
+    ['반지름',`${trim(m.rad)} km (달의 ${trim(m.rad/1737.4)}배)`],['발견',m.disc],['태양에서',fmtDist(P.d)],['기준 시점',fmtSimShort(sim.ms)]];
+  return rows.map(r=>`<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('');
+}
 
 // ---------- camera flights ----------
 let fly=null, targetObj=null;
@@ -667,12 +825,15 @@ function flyTo(target, dist, dur=1900, dirOverride){
   fly={t0:performance.now(),dur:reduceMotion?1:dur,fromT,toT:target.clone(),fromDir,toDir,fromDist,toDist:dist};
 }
 function viewDistFor(o){
+  if(o.cat==='moon') return Math.max(6,(SYS?SYS.maxR:10)*.45);
+  if(o.isCenter) return SYS?SYS.maxR*2:10;
   if(o.id==='sun') return 30;
   if(o.cat==='planet'||o.cat==='dwarf') return 3.2;
   if(o.cat==='cmb') return 60;
   if(o.d>1e8) return 7; if(o.d>1e5) return 5; return 3.5;
 }
 function niceDir(o){ // look from the Sun side, slightly above the plane
+  if(SYS){ if(o.cat==='moon'){ const out=o.pos.clone().normalize(); return out.add(new THREE.Vector3(0,.8,0)); } return new THREE.Vector3(0,.55,1); }
   const out=o.pos.clone().normalize(); if(!out.lengthSq()) return new THREE.Vector3(0,.5,1);
   const side=new THREE.Vector3(0,1,0).cross(out).normalize();
   return out.multiplyScalar(-.55).add(side.multiplyScalar(.7)).add(new THREE.Vector3(0,.45,0));
@@ -708,12 +869,12 @@ renderer.domElement.addEventListener('pointerdown',e=>{ downAt={x:e.clientX,y:e.
 renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt) return; const moved=Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y); downAt=null; if(moved>6) return;
   let best=null,bd=24;
-  objects.forEach(o=>{ if(o.hidden) return; const s=screenOf(o.pos); if(s.z>1) return; const d=Math.hypot(s.x-e.clientX,s.y-e.clientY); if(d<bd){bd=d;best=o;} });
+  (SYS?SYS.items:objects).forEach(o=>{ if(o.hidden) return; const s=screenOf(o.pos); if(s.z>1) return; const d=Math.hypot(s.x-e.clientX,s.y-e.clientY); if(d<bd){bd=d;best=o;} });
   if(best) pick(best);
 });
 renderer.domElement.addEventListener('dblclick',e=>{
   let best=null,bd=24;
-  objects.forEach(o=>{ const s=screenOf(o.pos); if(s.z>1) return; const d=Math.hypot(s.x-e.clientX,s.y-e.clientY); if(d<bd){bd=d;best=o;} });
+  (SYS?SYS.items:objects).forEach(o=>{ const s=screenOf(o.pos); if(s.z>1) return; const d=Math.hypot(s.x-e.clientX,s.y-e.clientY); if(d<bd){bd=d;best=o;} });
   if(best) flyToObj(best);
 });
 
@@ -723,13 +884,16 @@ let hits=[];
 search.addEventListener('input',()=>{
   const q=search.value.trim().toLowerCase();
   if(!q){ results.hidden=true; return; }
-  hits=objects.filter(o=>o.ko.toLowerCase().includes(q)||o.en.toLowerCase().includes(q)).slice(0,10);
-  results.innerHTML=hits.length?hits.map((o,i)=>`<div data-i="${i}" class="${i?'':'hl'}"><span>${esc(o.ko)}</span><small>${o.id==='sun'?'중심':fmtDist(o.d)}</small></div>`).join(''):'<div><span style="color:var(--muted)">결과 없음</span></div>';
+  hits=[...objects,...ALLMOONS].filter(o=>o.ko.toLowerCase().includes(q)||o.en.toLowerCase().includes(q)).slice(0,10);
+  results.innerHTML=hits.length?hits.map((o,i)=>`<div data-i="${i}" class="${i?'':'hl'}"><span>${esc(o.ko)}</span><small>${o.cat==='moon'?byId[o.parent].ko+' 위성':o.id==='sun'?'중심':fmtDist(o.d)}</small></div>`).join(''):'<div><span style="color:var(--muted)">결과 없음</span></div>';
   results.hidden=false;
 });
 results.addEventListener('click',e=>{ const d=e.target.closest('[data-i]'); if(!d) return; go(hits[+d.dataset.i]); });
 search.addEventListener('keydown',e=>{ if(e.key==='Enter'&&hits[0]) go(hits[0]); if(e.key==='Escape'){ results.hidden=true; search.blur(); } });
-function go(o){ results.hidden=true; search.value=''; search.blur(); if(measureMode) pick(o); else flyToObj(o); }
+function go(o){ results.hidden=true; search.value=''; search.blur();
+  if(o.cat==='moon'){ if(SYS&&SYS.pid===o.parent) flyToObj(SYS.items.find(x=>x.id===o.id)); else enterSys(o.parent,o.id); return; }
+  if(SYS) exitSys(true);
+  if(measureMode) pick(o); else flyToObj(o); }
 
 // ---------- toolbar ----------
 document.querySelectorAll('#units button').forEach(b=>b.onclick=()=>{
@@ -737,9 +901,9 @@ document.querySelectorAll('#units button').forEach(b=>b.onclick=()=>{
 });
 let showLabels=true;
 document.getElementById('bLabels').onclick=e=>{ showLabels=!showLabels; e.currentTarget.classList.toggle('on',showLabels); };
-document.getElementById('bRings').onclick=e=>{ ringGroup.visible=!ringGroup.visible; e.currentTarget.classList.toggle('on',ringGroup.visible); e.currentTarget.setAttribute('aria-pressed',ringGroup.visible); };
-document.getElementById('bOrbits').onclick=e=>{ orbitGroup.visible=!orbitGroup.visible; e.currentTarget.classList.toggle('on',orbitGroup.visible); e.currentTarget.setAttribute('aria-pressed',orbitGroup.visible); };
-document.getElementById('bHome').onclick=()=>{ stopTour(); targetObj=null; flyTo(new THREE.Vector3(), 360, 2200, new THREE.Vector3(.55,.62,.75)); };
+document.getElementById('bRings').onclick=e=>{ ringGroup.visible=!ringGroup.visible; if(SYS) SYS.ringG.visible=ringGroup.visible; e.currentTarget.classList.toggle('on',ringGroup.visible); e.currentTarget.setAttribute('aria-pressed',ringGroup.visible); };
+document.getElementById('bOrbits').onclick=e=>{ orbitGroup.visible=!orbitGroup.visible; if(SYS) SYS.orbits.visible=orbitGroup.visible; e.currentTarget.classList.toggle('on',orbitGroup.visible); e.currentTarget.setAttribute('aria-pressed',orbitGroup.visible); };
+document.getElementById('bHome').onclick=()=>{ if(SYS) exitSys(true); stopTour(); targetObj=null; flyTo(new THREE.Vector3(), 360, 2200, new THREE.Vector3(.55,.62,.75)); };
 
 // ---------- tour ----------
 const STEPS=[
@@ -770,7 +934,7 @@ function showStep(i){
   tour.t0=performance.now();
 }
 function setPlaying(p){ tour.playing=p; tPlay.textContent=p?'일시정지':'재생'; tour.t0=performance.now()-(p?0:0); }
-function startTour(){ tour.on=true; tourEl.hidden=false; setMeasure(false); setPlaying(!reduceMotion); showStep(0); document.getElementById('bTour').classList.add('on'); }
+function startTour(){ if(SYS) exitSys(true); tour.on=true; tourEl.hidden=false; setMeasure(false); setPlaying(!reduceMotion); showStep(0); document.getElementById('bTour').classList.add('on'); }
 function stopTour(){ tour.on=false; tourEl.hidden=true; document.getElementById('bTour').classList.remove('on'); }
 document.getElementById('bTour').onclick=()=>tour.on?stopTour():startTour();
 document.getElementById('tNext').onclick=()=>showStep(tour.i+1);
@@ -786,6 +950,8 @@ function updateReadout(force){
   if(!force && Math.abs(r-lastR)<.02) return; lastR=r;
   const tr=controls.target.length();
   const cd=camera.position.distanceTo(controls.target);
+  if(SYS){ rdT.textContent = targetObj&&controls.target.distanceTo(targetObj.pos)<.01 ? targetObj.ko : `${SYS.P.ko} 중심`;
+    rdC.textContent = (targetObj&&targetObj.cat==='moon') ? `${SYS.P.ko}에서 ${kfmt(targetObj.a)} km` : `반경 ≈ ${kfmt(SYS.fli(cd/1.7))} km까지`; return; }
   rdC.textContent = tr<.01 ? `반경 ≈ ${fmtDist(finv(cd/1.7))}까지` : `주변 ±${(cd/A).toFixed(1)} 자릿수(10ⁿ배)`;
   rdT.textContent = targetObj && controls.target.distanceTo(targetObj.pos)<.01 ? targetObj.ko : (tr<.01?'태양':`태양에서 ≈ ${fmtDist(finv(tr))}`);
   const focus=Math.max(tr, cd/1.7); let best=null,bd=1e9;
@@ -857,7 +1023,7 @@ function tickSim(now){
     sim.ms+=sim.dir*SPEEDS[sim.idx][1]*1000*dt;
     if(sim.ms<MINMS||sim.ms>MAXMS){ sim.ms=Math.max(MINMS,Math.min(MAXMS,sim.ms)); sim.paused=true; syncTimeUI(); toast('시뮬레이션 범위(약 ±10만 년) 끝에 도달했습니다',3000); }
   }
-  applySim(sim.ms);
+  applySim(sim.ms); updateSys(sim.ms);
   const c=fmtSim(sim.ms); if(c!==lastClock){ lastClock=c; simDate.textContent=c;
     const dy=(sim.ms-Date.now())/YR; simDelta.textContent=sim.live?'':(Math.abs(dy)<1/365?'현재':`현재${dy>0?'+':'−'}${Math.abs(dy)<1?trim(Math.abs(dy)*365.25)+'일':kfmt(Math.abs(dy))+'년'}`); }
   if(now-lastInfo>250 && !info.hidden){ lastInfo=now; const dl=document.getElementById('infoDl');
@@ -875,31 +1041,33 @@ function frame(now){
     else if(fly) tour.t0=now;
   }
   const cp=camera.position;
-  objects.forEach(o=>{ const dc=cp.distanceTo(o.pos); o.dc=dc; o.sprite.scale.setScalar(Math.max(dc*.022*o.size,1e-4)); });
-  if(selected){ selRing.visible=true; selRing.position.copy(selected.pos); selRing.scale.setScalar(selected.dc*.06); } else selRing.visible=false;
-  renderer.render(scene,camera);
+  const LIST=SYS?SYS.items:objects;
+  LIST.forEach(o=>{ const dc=cp.distanceTo(o.pos); o.dc=dc; if(!o.fixed) o.sprite.scale.setScalar(Math.max(dc*.022*o.size,1e-4)); });
+  const selIn=selected&&!selected.isCenter&&LIST.includes(selected);
+  if(selIn){ selRing.visible=true; selRing.position.copy(selected.pos); selRing.scale.setScalar(selected.fixed?selected.sprite.scale.x*1.15:selected.dc*.06); } else selRing.visible=false;
+  renderer.render(SYS?sysScene:scene,camera);
 
   // labels with priority + collision
   const placed=[];
   const cand=[];
   if(showLabels){
-    objects.forEach(o=>{
-      if(o.hidden){ o.el.style.display='none'; return; }
+    LIST.forEach(o=>{
+      if(o.hidden||o.isCenter){ o.el.style.display='none'; return; }
       const s=screenOf(o.pos); o.scr=s;
       if(s.z>1||s.x<-50||s.x>innerWidth+50||s.y<-20||s.y>innerHeight+20){ o.el.style.display='none'; return; }
       o.pri=(o===selected?1000:0)+o.imp*3-Math.log10(o.dc+.01)*4; cand.push(o);
     });
     cand.sort((a,b)=>b.pri-a.pri);
-  } else objects.forEach(o=>o.el.style.display='none');
+  } else LIST.forEach(o=>o.el.style.display='none');
   cand.forEach(o=>{
     const r={x:o.scr.x+8,y:o.scr.y-9,w:o.w||60,h:o.h||18};
     if(o!==selected && (overlaps(r,placed)||placed.length>36)){ o.el.style.display='none'; return; }
     placed.push(r); o.el.style.display=''; o.el.style.transform=`translate(${r.x}px,${r.y}px)`;
     o.el.classList.toggle('sel',o===selected);
   });
-  RUNGS.forEach(g=>{
+  (SYS?SYS.rungs:RUNGS).forEach(g=>{
     if(!showLabels||!ringGroup.visible){ g.el.style.display='none'; return; }
-    const s=screenOf(g.pos), dc=cp.distanceTo(g.pos), R=f(g.d);
+    const s=screenOf(g.pos), dc=cp.distanceTo(g.pos), R=SYS?g.r:f(g.d);
     const r={x:s.x+4,y:s.y-6,w:g.w||50,h:g.h||14};
     if(s.z>1||dc>R*6+8||dc<R*.08||overlaps(r,placed)){ g.el.style.display='none'; return; }
     placed.push(r); g.el.style.display=''; g.el.style.transform=`translate(${r.x}px,${r.y}px)`;
